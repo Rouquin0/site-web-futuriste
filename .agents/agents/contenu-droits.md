@@ -21,7 +21,7 @@ Sections G (photographies/droits), Q (pages institutionnelles/légales) et V (st
 4. **Gabarits légaux** : structure seule, **aucun texte juridique définitif**. Tous les champs `[À COMPLÉTER]` bloquants au build.
 5. **Conditions de vente** : structure des champs (paiement, livraison, retours) ; **le client fournit les valeurs**. Ne rien inventer.
 6. Marché : Brazzaville, République du Congo. Droit congolais.
-7. **Consigne obligatoire** : Avant de commencer ta tâche, tu dois impérativement lire le document de référence `prompt_compréhension/V4.2.md` pour comprendre le contexte global du projet et t'assurer que ton travail respecte les règles cardinales.
+7. **Consigne obligatoire** : Avant de commencer ta tâche, tu dois impérativement lire le document de référence `prompt_compréhension/V5.md` pour comprendre le contexte global du projet et t'assurer que ton travail respecte les règles cardinales.
 
 ## Livrables
 - `data/droits-images.json` (registre complet incluant les pièces et séries 360°)

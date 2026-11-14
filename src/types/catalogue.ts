@@ -64,6 +64,31 @@ export interface ConditionsVente {
   retraitBoutique: boolean;
 }
 
+// ─── Coloris (variantes de couleur — V5 §W) ───────────────────────────────────
+export type PastilleColoris =
+  | { type: "couleur"; valeur: string }
+  | { type: "motif"; image: string };
+
+export interface Coloris {
+  /** Identifiant unique dans la tenue (ex: "bleu-indigo") */
+  id: string;
+  /** Nom affiché en toutes lettres (ex: "Bleu indigo") */
+  nom: string;
+  /** Famille normalisée pour le filtre catalogue (ex: "bleu", "imprime") */
+  famille: string;
+  /** Pastille : couleur unie (hex) ou extrait de motif (image) */
+  pastille: PastilleColoris;
+  /**
+   * Photo du vêtement RÉEL dans ce coloris, porté par le mannequin.
+   * DOIT exister dans droits-images.json. Jamais de recoloration numérique.
+   */
+  imageId: string;
+  /** Un seul coloris par défaut par tenue */
+  defaut?: boolean;
+  /** Disponibilité par taille pour CE coloris (sinon : celle de la tenue) */
+  tailles?: DeclinaisonTaille[];
+}
+
 // ─── Tenue (entité principale) ────────────────────────────────────────────────
 export interface Tenue {
   /** Identifiant unique non modifiable (ex: "robe-wax-001") */
@@ -113,6 +138,11 @@ export interface Tenue {
   enAvant: boolean;
   /** Pièces composant la tenue et détails d'interaction (Section V) */
   pieces?: PieceDetail[];
+  /**
+   * Variantes de couleur (Section W). Optionnel : sans ce champ, la tenue
+   * garde son unique couleur (`couleurs`) et aucune pastille n'est affichée.
+   */
+  coloris?: Coloris[];
 }
 
 // ─── Section V : Pièces de la tenue & Médias de Détail ─────────────────────────

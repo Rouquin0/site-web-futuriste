@@ -87,3 +87,85 @@
     }
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   V5 — Mouvement, repères techniques
+   Règles : transform + opacity uniquement, aucun dégradé, aucune lueur.
+   Sans JavaScript (classe « js » absente) ou en réduction des animations :
+   tout est visible immédiatement.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Étiquettes techniques (monospace, capitales espacées) */
+.hud-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* États initiaux des animations d'apparition (posés uniquement si JavaScript est actif) */
+html.js [data-hero],
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+}
+
+html.js [data-char] {
+  transform: translate3d(0, 112%, 0);
+}
+
+html.js [data-draw] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* États finaux (posés par le code quand l'animation est terminée, ou sans animation) */
+html.js [data-hero].is-revealed,
+html.js [data-reveal].is-revealed {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+html.js [data-char].is-revealed {
+  transform: none !important;
+}
+
+html.js [data-draw].is-drawn {
+  stroke-dashoffset: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-hero],
+  html.js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html.js [data-char] {
+    transform: none !important;
+  }
+  html.js [data-draw] {
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* Trait d'invitation au défilement */
+@keyframes scroll-cue {
+  0% {
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 400%, 0);
+  }
+}
+
+.scroll-cue {
+  animation: scroll-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* Le défilement vertical de la page reste natif ; défilement doux seulement si autorisé */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

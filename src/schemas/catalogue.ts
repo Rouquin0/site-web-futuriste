@@ -96,6 +96,20 @@ export const PieceDetailSchema = z.object({
   prixXAF: z.number().int().positive().optional(),
 });
 
+// ─── Coloris (V5 §W) ──────────────────────────────────────────────────────────
+export const ColorisSchema = z.object({
+  id: z.string().min(1).max(60).regex(/^[a-z0-9-]+$/, "Identifiant de coloris : minuscules, chiffres, tirets"),
+  nom: z.string().min(1).max(60),
+  famille: z.string().min(1).max(40),
+  pastille: z.discriminatedUnion("type", [
+    z.object({ type: z.literal("couleur"), valeur: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Couleur attendue : #RRGGBB") }),
+    z.object({ type: z.literal("motif"), image: z.string().min(1).max(500) }),
+  ]),
+  imageId: z.string().min(1).max(100),
+  defaut: z.boolean().optional(),
+  tailles: z.array(DeclinaisonTailleSchema).max(10).optional(),
+});
+
 // ─── Tenue ────────────────────────────────────────────────────────────────────
 export const TenueSchema = z.object({
   id: z
@@ -142,6 +156,7 @@ export const TenueSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Format attendu : YYYY-MM-DD"),
   enAvant: z.boolean(),
   pieces: z.array(PieceDetailSchema).max(20).optional(),
+  coloris: z.array(ColorisSchema).max(12).optional(),
 });
 
 // ─── Types inférés depuis Zod (source de vérité pour le runtime) ───────────────

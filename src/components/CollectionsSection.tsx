@@ -1,0 +1,40 @@
+import React from "react";
+import SectionHead from "./SectionHead";
+import CollectionLink from "./CollectionLink";
+import { ArrowIcon } from "./HudGraphics";
+import type { Tenue } from "../types/catalogue";
+
+/** Index des collections (déduit des données) : chaque ligne ouvre la première tenue de la collection. */
+export default function CollectionsSection({ tenues }: { tenues: Tenue[] }) {
+  const map = new Map<string, Tenue[]>();
+  [...tenues].sort((a, b) => a.ordreAffichage - b.ordreAffichage).forEach((t) => {
+    map.set(t.collection, [...(map.get(t.collection) ?? []), t]);
+  });
+  const collections = Array.from(map.entries());
+  if (collections.length === 0) return null;
+
+  return (
+    <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32">
+      <SectionHead index="03" title="Collections" right={<span aria-hidden="true">{String(collections.length).padStart(2, "0")}</span>} />
+      <ul className="mt-6 border-b border-border-decor">
+        {collections.map(([nom, items], i) => (
+          <li key={nom} data-reveal className="border-t border-border-decor">
+            <CollectionLink
+              slug={items[0].slug}
+              className="group flex min-h-touch items-center gap-4 py-6 md:py-8 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:-outline-offset-2"
+            >
+              <span className="hud-label w-8 text-accent">{String(i + 1).padStart(2, "0")}</span>
+              <span className="flex-1 font-serif text-3xl md:text-5xl font-light leading-none text-primary transition-transform duration-300 ease-out group-hover:translate-x-2">
+                {nom}
+              </span>
+              <span className="hud-label hidden text-secondary sm:block">
+                {String(items.length).padStart(2, "0")} {items.length > 1 ? "tenues" : "tenue"}
+              </span>
+              <ArrowIcon className="h-5 w-5 text-primary transition-transform duration-300 ease-out group-hover:translate-x-1" />
+            </CollectionLink>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

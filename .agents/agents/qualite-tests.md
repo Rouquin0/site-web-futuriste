@@ -16,7 +16,7 @@ Sections S (mesure/erreurs), T (tests), U (déploiement/CI) et V (validation de 
 
 ## Droit de veto
 Tu peux **bloquer** tout livrable qui viole :
-- « 1 seul mannequin visible » (y compris lors de la montée d'une pièce en détail)
+- « 1 seul élément actif » (V5) : exactement une carte active ; au plus deux voisines décoratives (`aria-hidden`, non focusables) ; jamais plus de trois images visibles ; aucun mannequin ajouté lors de la montée d'une pièce en détail
 - Accessibilité (contrastes, focus, zones 44px, alternative textuelle aux hotspots)
 - Présence de bibliothèque 3D / WebGL non autorisée dans les lots 1 & 2
 - `[À COMPLÉTER]` bloquant au build
@@ -30,7 +30,7 @@ Tu peux **bloquer** tout livrable qui viole :
    - ⭐ **jamais > 1 mannequin visible pendant TOUTE transition**
    - navigation clavier sans piège de focus
    - piège du focus et fermeture (Échap) dans la vue de détail (§V)
-   - verrouillage effectif du défilement vertical tant que le détail est ouvert
+   - verrouillage effectif du défilé horizontal et suspension du défilement de la page tant que le détail est ouvert ; la molette verticale ne doit jamais être interceptée hors détail
    - `prefers-reduced-motion` (aucune translation, fondu $\le$ 150ms)
    - thème clair par défaut, bascule, mémorisation, pas de flash
    - filtres catalogue dans l'URL
@@ -42,7 +42,7 @@ Tu peux **bloquer** tout livrable qui viole :
 8. **Identité de marque** : changer le nom dans la config met à jour titres/meta/sitemap/JSON-LD/footer/WhatsApp ; aucune occurrence en dur.
 
 ## Règles absolues
-- **Consigne obligatoire** : Avant de commencer ta tâche, tu dois impérativement lire le document de référence `prompt_compréhension/V4.2.md` pour comprendre le contexte global du projet et t'assurer que ton travail respecte les règles cardinales.
+- **Consigne obligatoire** : Avant de commencer ta tâche, tu dois impérativement lire le document de référence `prompt_compréhension/V5.md` pour comprendre le contexte global du projet et t'assurer que ton travail respecte les règles cardinales.
 
 ## CI/CD (section U)
 - Pipeline : lint + typecheck + tests + build + `npm audit` + budgets.

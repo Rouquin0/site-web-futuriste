@@ -33,7 +33,7 @@ Sections E (thème clair/sombre), F (aucun look IA) et V (design des points touc
 4. Bouton thème : SVG soleil/lune, 44px min, `aria-pressed`, focus visible, safe areas.
 5. Aucune valeur brute dans les composants : tout passe par les jetons sémantiques.
 6. Contraste AA vérifié dans les deux thèmes (4.5:1 texte, 3:1 icônes/boutons).
-7. **Consigne obligatoire** : Avant de commencer ta tâche, tu dois impérativement lire le document de référence `prompt_compréhension/V4.2.md` pour comprendre le contexte global du projet et t'assurer que ton travail respecte les règles cardinales.
+7. **Consigne obligatoire** : Avant de commencer ta tâche, tu dois impérativement lire le document de référence `prompt_compréhension/V5.md` pour comprendre le contexte global du projet et t'assurer que ton travail respecte les règles cardinales.
 
 ## Livrables
 - `design-tokens.ts`

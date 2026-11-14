@@ -60,7 +60,10 @@ export function genererLienWhatsApp({
       `genererLienWhatsApp : la taille "${taille}" n'existe pas pour la tenue "${tenue.id}"`
     );
   }
-  if (!tenue.couleurs.includes(couleur)) {
+  if (
+    !tenue.couleurs.includes(couleur) &&
+    !tenue.coloris?.some((c) => c.nom === couleur)
+  ) {
     throw new Error(
       `genererLienWhatsApp : la couleur "${couleur}" n'existe pas pour la tenue "${tenue.id}"`
     );

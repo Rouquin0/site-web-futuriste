@@ -26,6 +26,7 @@ const montserrat = Montserrat({
 // ── Script de thème (Inline pour éviter les conflits) ────────────────────────
 const themeInitScript = `
   (function() {
+    document.documentElement.classList.add('js');
     try {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {

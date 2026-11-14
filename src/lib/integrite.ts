@@ -13,6 +13,7 @@
 import { TenueSchema, DroitImageSchema, PieceDetailSchema } from "../schemas/catalogue";
 import type { Tenue } from "../types/catalogue";
 import type { DroitImage } from "../types/catalogue";
+import { validerColoris } from "./coloris";
 
 export interface ResultatValidation {
   valide: boolean;
@@ -166,6 +167,7 @@ export function validerIntegriteCatalogue(
   for (const tenue of tenues) {
     idsUtilises.add(tenue.imageId);
     tenue.imagesSecondairesIds?.forEach((id) => idsUtilises.add(id));
+    tenue.coloris?.forEach((c) => idsUtilises.add(c.imageId));
   }
   for (const droit of droitsImages) {
     if (!idsUtilises.has(droit.id)) {
@@ -174,6 +176,9 @@ export function validerIntegriteCatalogue(
       );
     }
   }
+
+  // ── 7. Coloris (V5 §W) ────────────────────────────────────────────────────
+  validerColoris(tenues, droitsParId, erreurs, avertissements);
 
   return {
     valide: erreurs.length === 0,
