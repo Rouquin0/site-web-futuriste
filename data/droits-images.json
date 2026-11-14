@@ -1,0 +1,102 @@
+[
+  {
+    "id": "img-robe-wax-001-principale",
+    "fichier": "/images/tenues/robe-wax-wenge-001.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Robe longue en wax wengé à motifs géométriques, coupe droite évasée en bas, col rond, manches trois-quarts, sur fond de studio gris neutre",
+    "restrictions": null
+  },
+  {
+    "id": "img-robe-wax-001-detail",
+    "fichier": "/images/tenues/robe-wax-wenge-001-detail.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Détail du tissu wax wengé à motifs géométriques dorés, texture et reflets du coton imprimé visibles en gros plan, fond studio gris neutre",
+    "restrictions": null
+  },
+  {
+    "id": "img-ensemble-bazin-001-principale",
+    "fichier": "/images/tenues/ensemble-bazin-bleu-001.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Ensemble deux pièces en bazin riche bleu indigo : haut tunique brodé col V et pantalon droit assorti, broderies dorées aux emmanchures, sur fond de studio gris neutre",
+    "restrictions": null
+  },
+  {
+    "id": "img-chemise-kente-001-principale",
+    "fichier": "/images/tenues/chemise-kente-multicolore-001.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Chemise homme à col classique en tissu kente multicolore rouge, vert et or, coupe ajustée, manches courtes, bandes verticales tissées, sur fond de studio gris neutre",
+    "restrictions": null
+  },
+  {
+    "id": "img-robe-soie-blanche-001-principale",
+    "fichier": "/images/tenues/robe-soie-blanche-001.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Robe de soirée en satin blanc ivoire, coupe sirène, encolure asymétrique, fente latérale, longueur sol, drapé subtil à la hanche, sur fond de studio gris neutre",
+    "restrictions": null
+  },
+  {
+    "id": "img-tailleur-ankara-001-principale",
+    "fichier": "/images/tenues/tailleur-ankara-terracotta-001.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Tailleur deux pièces femme en ankara terracotta et orange : veste courte boutonnée à motifs africains et jupe crayon mi-genou assortie, sur fond de studio gris neutre",
+    "restrictions": null
+  },
+  {
+    "id": "img-piece-robe-wax-col-macro",
+    "fichier": "/images/pieces/robe-wax-col-macro.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Gros plan sur le col rond et la surpiqûre dorée de la robe en wax wengé",
+    "restrictions": null
+  },
+  {
+    "id": "img-piece-robe-wax-manche-macro",
+    "fichier": "/images/pieces/robe-wax-manche-macro.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Gros plan sur l'ourlet de la manche trois-quarts et le motif géométrique du wax",
+    "restrictions": null
+  },
+  {
+    "id": "img-piece-bazin-broderie-macro",
+    "fichier": "/images/pieces/bazin-broderie-macro.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Gros plan sur la broderie dorée artisanale à l'encolure en V de la tunique en bazin",
+    "restrictions": null
+  },
+  {
+    "id": "img-piece-bazin-pantalon-macro",
+    "fichier": "/images/pieces/bazin-pantalon-macro.webp",
+    "source": "[À COMPLÉTER — Photographe ou fournisseur ayant fourni cette image]",
+    "licence": "[À COMPLÉTER — Ex: Propriétaire, photo prise par X le YYYY-MM-DD]",
+    "dateAcquisition": "2026-01-01",
+    "autorisationMannequin": null,
+    "texteAlternatif": "Gros plan sur la taille élastiquée et les coutures de finition du pantalon en bazin",
+    "restrictions": null
+  }
+]

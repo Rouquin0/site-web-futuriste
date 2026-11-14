@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  PALETTE SÉMANTIQUE OFFICIELLE V4.2
+  Haute couture sobre - Zéro Look IA - Thème clair par défaut
+*/
+
+:root {
+  color-scheme: light;
+
+  /* Jetons sémantiques - Mode clair */
+  --color-background: #FAFAF9;
+  --color-surface: #FFFFFF;
+  --color-primary: #1C1917;
+  --color-secondary: #57534E;
+  --color-border-decor: #D6D3D1;
+  --color-border-control: #78716C;
+  --color-accent: #A16207;
+  --color-accent-contrast: #FAFAF9;
+
+  /* Marges de sécurité système (Safe Areas) */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Jetons sémantiques - Mode sombre */
+  --color-background: #1C1917;
+  --color-surface: #292524;
+  --color-primary: #FAFAF9;
+  --color-secondary: #A8A29E;
+  --color-border-decor: #44403C;
+  --color-border-control: #78716C;
+  --color-accent: #D4A04A;
+  --color-accent-contrast: #1C1917;
+}
+
+/* Styles de base et respect de l'accessibilité */
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-primary);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-primary);
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Focus visible obligatoire (contraste >= 3:1) */
+  :focus-visible {
+    outline: 2px solid var(--color-border-control);
+    outline-offset: 2px;
+  }
+
+  /* Neutralisation des transitions si réduction d'animation demandée */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Transition sobre et brève pour le changement de thème uniquement */
+  @media (prefers-reduced-motion: no-preference) {
+    body,
+    header,
+    nav,
+    aside,
+    button {
+      transition-property: background-color, border-color, color;
+      transition-duration: 150ms;
+      transition-timing-function: ease-in-out;
+    }
+  }
+}
