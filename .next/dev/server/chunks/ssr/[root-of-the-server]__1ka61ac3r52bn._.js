@@ -95,6 +95,14 @@ const siteConfig = {
     get telephoneWaMeSanitized () {
         return this.telephoneWhatsApp.replace(/\+|\s/g, "");
     },
+    // ─── Réseaux sociaux (liens fonctionnels — remplacez par vos vrais comptes) ──
+    // Exemples : "https://wa.me/242060000000", "https://instagram.com/votre.boutique",
+    //            "https://facebook.com/votreboutique"
+    sociaux: {
+        whatsapp: "https://wa.me/242060000000?text=Bonjour%20!%20Je%20souhaite%20d%C3%A9couvrir%20vos%20tenues.",
+        instagram: "https://instagram.com/votre.boutique",
+        facebook: "https://facebook.com/votreboutique"
+    },
     // ─── URLs & domaine ──────────────────────────────────────────────────────────
     // Lire depuis variable d'environnement NEXT_PUBLIC_SITE_URL en priorité
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "[À COMPLÉTER — URL de production]",
@@ -142,6 +150,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$site$2e$config$2e$ts__$5b$ap
 // ── Script de thème (Inline pour éviter les conflits) ────────────────────────
 const themeInitScript = `
   (function() {
+    document.documentElement.classList.add('js');
     try {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -202,12 +211,12 @@ function RootLayout({ children }) {
                     }
                 }, void 0, false, {
                     fileName: "[project]/src/app/layout.tsx",
-                    lineNumber: 90,
+                    lineNumber: 91,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/layout.tsx",
-                lineNumber: 88,
+                lineNumber: 89,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("body", {
@@ -216,13 +225,13 @@ function RootLayout({ children }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/app/layout.tsx",
-                lineNumber: 97,
+                lineNumber: 98,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/layout.tsx",
-        lineNumber: 87,
+        lineNumber: 88,
         columnNumber: 5
     }, this);
 }

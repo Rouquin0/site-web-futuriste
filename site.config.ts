@@ -32,6 +32,15 @@ export const siteConfig = {
     return this.telephoneWhatsApp.replace(/\+|\s/g, "");
   },
 
+  // ─── Réseaux sociaux (liens fonctionnels — remplacez par vos vrais comptes) ──
+  // Exemples : "https://wa.me/242060000000", "https://instagram.com/votre.boutique",
+  //            "https://facebook.com/votreboutique"
+  sociaux: {
+    whatsapp: "https://wa.me/242060000000?text=Bonjour%20!%20Je%20souhaite%20d%C3%A9couvrir%20vos%20tenues.",
+    instagram: "https://instagram.com/votre.boutique",
+    facebook: "https://facebook.com/votreboutique",
+  },
+
   // ─── URLs & domaine ──────────────────────────────────────────────────────────
   // Lire depuis variable d'environnement NEXT_PUBLIC_SITE_URL en priorité
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "[À COMPLÉTER — URL de production]",

@@ -55,8 +55,7 @@ function PieceCell({ entry, index, onOpen }: { entry: PieceEntry; index: number;
         </div>
         <div className="p-4 md:p-5">
           <p className="hud-label text-secondary">
-            <span className="text-accent">{String(index + 1).padStart(2, "0")}</span>
-            <span className="mx-2 text-border-control" aria-hidden="true">/</span>
+            <span aria-hidden="true" className="mr-2 inline-block h-1.5 w-1.5 rotate-45 bg-accent" />
             {label}
           </p>
           <h3 className="mt-2 font-serif text-xl md:text-2xl font-normal leading-tight text-primary">{piece.nom}</h3>
@@ -77,7 +76,7 @@ export default function AccessoiresSection({ pieces }: { pieces: PieceEntry[] })
   return (
     <>
       <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
-        <SectionHead index="02" title="Accessoires & pièces" right={<span aria-hidden="true">{String(ordered.length).padStart(2, "0")} pièces</span>} />
+        <SectionHead eyebrow="Atelier — gros plans" title="Accessoires & pièces" variant="atelier" right={<span aria-hidden="true" className="inline-flex items-center gap-2"><span className="inline-block h-1.5 w-1.5 rotate-45 bg-accent" />{ordered.length} pièce{ordered.length > 1 ? "s" : ""}</span>} />
         <ul className="mt-10 grid grid-cols-2 gap-px border border-border-decor bg-border-decor md:grid-cols-4">
           {ordered.map((entry, i) => (
             <PieceCell key={entry.piece.id} entry={entry} index={i} onOpen={setOpen} />

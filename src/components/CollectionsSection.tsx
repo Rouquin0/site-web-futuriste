@@ -15,7 +15,7 @@ export default function CollectionsSection({ tenues }: { tenues: Tenue[] }) {
 
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32">
-      <SectionHead index="03" title="Collections" right={<span aria-hidden="true">{String(collections.length).padStart(2, "0")}</span>} />
+      <SectionHead eyebrow="Univers — vestiaire" title="Collections" variant="univers" right={<span aria-hidden="true" className="inline-flex items-center gap-2"><span className="inline-block h-1.5 w-1.5 rotate-45 bg-accent" />{collections.length} univers</span>} />
       <ul className="mt-6 border-b border-border-decor">
         {collections.map(([nom, items], i) => (
           <li key={nom} data-reveal className="border-t border-border-decor">
@@ -23,7 +23,7 @@ export default function CollectionsSection({ tenues }: { tenues: Tenue[] }) {
               slug={items[0].slug}
               className="group flex min-h-touch items-center gap-4 py-6 md:py-8 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:-outline-offset-2"
             >
-              <span className="hud-label w-8 text-accent">{String(i + 1).padStart(2, "0")}</span>
+              <span aria-hidden="true" className="hud-label w-8 text-accent">◆</span>
               <span className="flex-1 font-serif text-3xl md:text-5xl font-light leading-none text-primary transition-transform duration-300 ease-out group-hover:translate-x-2">
                 {nom}
               </span>

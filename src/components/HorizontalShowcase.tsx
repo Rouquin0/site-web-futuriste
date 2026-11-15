@@ -92,11 +92,14 @@ interface CardProps {
   preloadImageId: string | null;
   register: (i: number, el: HTMLElement | null) => void;
   onNeighborClick: (i: number) => void;
+  onInfo: () => void;
+  onView360: () => void;
+  showTools: boolean;
   children?: React.ReactNode;
 }
 
 const Card = React.memo(function Card({
-  index, total, tenue, size, heavy, isActive, imageId, preloadImageId, register, onNeighborClick, children,
+  index, total, tenue, size, heavy, isActive, imageId, preloadImageId, register, onNeighborClick, onInfo, onView360, showTools, children,
 }: CardProps) {
   const [failed, setFailed] = useState(false);
   const img = resoudreImage(imageId, tenue.descriptionCourte);
@@ -174,6 +177,35 @@ const Card = React.memo(function Card({
         <div data-info className="absolute inset-0" style={{ opacity: 0 }}>
           {isActive && children}
         </div>
+
+        {/* Actions flottantes en bas à droite de chaque visuel actif : 360° + informations */}
+        {isActive && showTools && (
+          <div className="absolute bottom-3 right-3 z-30 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onView360(); }}
+              aria-label={`Voir la tenue ${tenue.nom} en 360°`}
+              className="inline-flex min-h-touch min-w-touch items-center gap-1.5 rounded-full border border-accent bg-surface/95 px-3 py-2 hud-label text-accent shadow-md backdrop-blur transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2" />
+                <path d="M18.5 2.5v4h-4M5.5 21.5v-4h4" />
+              </svg>
+              360°
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onInfo(); }}
+              aria-label={`Informations sur la tenue : ${tenue.nom}`}
+              title="Informations"
+              className="flex h-11 min-h-touch w-11 min-w-touch items-center justify-center rounded-full border border-border-control bg-primary text-background shadow-md transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
+            >
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" /><path d="M12 11v5" /><circle cx="12" cy="7.6" r="0.7" fill="currentColor" stroke="none" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -182,7 +214,12 @@ const Card = React.memo(function Card({
 // ─── Composant principal ─────────────────────────────────────────────────────
 
 export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
-  const sorted = useMemo(() => [...tenues].sort((a, b) => a.ordreAffichage - b.ordreAffichage), [tenues]);
+  const [genre, setGenre] = useState<"tous" | "femme" | "homme">("tous");
+  const baseSorted = useMemo(() => [...tenues].sort((a, b) => a.ordreAffichage - b.ordreAffichage), [tenues]);
+  const sorted = useMemo(
+    () => (genre === "tous" ? baseSorted : baseSorted.filter((t) => t.genre === genre || t.genre === "unisexe")),
+    [baseSorted, genre]
+  );
   const n = sorted.length;
   const reduced = useReducedMotion();
 
@@ -195,12 +232,13 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
   const [intent, setIntent] = useState<{ tenueId: string; imageId: string } | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const [selectedPiece, setSelectedPiece] = useState<PieceDetail | null>(null);
+  const [tenue360Piece, setTenue360Piece] = useState<{ piece: PieceDetail; nom: string; ref: string } | null>(null);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
-  const infoButtonRef = useRef<HTMLButtonElement>(null);
+  const infoButtonRef = useRef<HTMLElement | null>(null);
   const cardEls = useRef(new Map<number, HTMLElement>());
   const parts = useRef(new WeakMap<HTMLElement, { sharp: HTMLElement[]; blur: HTMLElement[]; info: HTMLElement[] }>());
 
@@ -218,7 +256,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
   const dragRef = useRef<{ id: number; x: number; y: number; start: number; active: boolean; samples: Array<[number, number]> } | null>(null);
   const justDraggedRef = useRef(false);
 
-  useEffect(() => { overlayOpenRef.current = selectedPiece !== null || infoOpen; }, [selectedPiece, infoOpen]);
+  useEffect(() => { overlayOpenRef.current = selectedPiece !== null || infoOpen || tenue360Piece !== null; }, [selectedPiece, infoOpen, tenue360Piece]);
 
   // ── Chargement différé de GSAP ──
   useEffect(() => {
@@ -390,13 +428,37 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
     const onGoto = (e: Event) => {
       const slugTarget = (e as CustomEvent<string>).detail;
       const i = sorted.findIndex((t) => t.slug === slugTarget);
+      if (i < 0) {
+        // La tenue est masquée par le filtre genre : on lève le filtre puis on y va
+        const j = baseSorted.findIndex((t) => t.slug === slugTarget);
+        if (j < 0) return;
+        setGenre("tous");
+        userMovedRef.current = true;
+        rootRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+        window.setTimeout(() => moveTo(j, true), 80);
+        return;
+      }
       rootRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
       if (i >= 0) { userMovedRef.current = true; moveTo(i, true); }
     };
     window.addEventListener("showcase:goto", onGoto);
     return () => window.removeEventListener("showcase:goto", onGoto);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sorted]);
+  }, [sorted, baseSorted]);
+
+  // ── Changement de filtre genre : retour au début du défilé ──
+  useEffect(() => {
+    posRef.current = 0;
+    activeRef.current = 0;
+    metaRefIdx.current = 0;
+    setMountCenter(0);
+    setActiveIndex(0);
+    setMetaIndex(0);
+    setInfoOpen(false);
+    setSelectedPiece(null);
+    setTenue360Piece(null);
+    apply();
+  }, [genre, apply]);
 
   // ── Visibilité de la section (clavier global actif seulement quand elle est à l'écran) ──
   useEffect(() => {
@@ -502,6 +564,28 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
     moveTo(i);
   }, [moveTo]);
 
+  // ── Vue 360° au niveau tenue (fonctionne pour TOUTES les tenues, même sans dossier de frames) ──
+  const openTenue360 = useCallback((tenue: Tenue) => {
+    if (movingRef.current) return;
+    const mainSrc = resoudreImage(getImageIdPourColoris(tenue, colorisSel[tenue.id]), tenue.descriptionCourte).src;
+    const secondaires = (tenue.imagesSecondairesIds ?? []).map((id) => resoudreImage(id, tenue.descriptionCourte).src);
+    const rotationHeritee = tenue.pieces?.find((p) => p.rotation)?.rotation;
+    const piece: PieceDetail = {
+      id: `tenue-${tenue.id}-vue-360`,
+      nom: `Vue 360° — ${tenue.nom}`,
+      type: "vetement",
+      matiere: tenue.matiere,
+      description: tenue.descriptionLongue ?? tenue.descriptionCourte,
+      texteAlternatif: `Vue à 360 degrés de ${tenue.nom}`,
+      zoneTouchable: { x: 50, y: 50, width: 0, height: 0, nomAccessible: `Voir ${tenue.nom} en 360 degrés` },
+      photos: [mainSrc, ...secondaires],
+      ...(rotationHeritee ? { rotation: rotationHeritee } : {}),
+    };
+    setInfoOpen(false);
+    if (document.activeElement instanceof HTMLElement) infoButtonRef.current = document.activeElement;
+    setTenue360Piece({ piece, nom: tenue.nom, ref: tenue.reference });
+  }, [colorisSel]);
+
   // ── Pièces / détail ──
   const handleSelectPiece = useCallback((piece: PieceDetail) => {
     if (movingRef.current) return;
@@ -546,10 +630,44 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
     >
       <div className="relative mx-auto max-w-7xl px-6 pt-20 md:pt-28">
         <SectionHead
-          index="01"
+          eyebrow="Le défilé — Brazzaville"
           title="Défilé"
-          right={<span aria-hidden="true">{pad(clamp(metaIndex, 0, n - 1) + 1)} / {pad(n)}</span>}
+          variant="defile"
+          right={
+            <span className="inline-flex items-center gap-2" aria-hidden="true">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+              {clamp(metaIndex, 0, n - 1) + 1} / {n} créations
+            </span>
+          }
         />
+
+        {/* Filtre Homme / Femme — segmenté premium */}
+        <div data-reveal className="mt-6 flex flex-wrap items-center gap-3">
+          <p className="hud-label text-secondary">Vestiaire :</p>
+          <div role="group" aria-label="Filtrer les tenues par vestiaire" className="inline-flex items-center gap-1 border border-border-control bg-surface p-1">
+            {(["tous", "femme", "homme"] as const).map((g) => {
+              const actif = genre === g;
+              const count = g === "tous" ? baseSorted.length : baseSorted.filter((t) => t.genre === g || t.genre === "unisexe").length;
+              const label = g === "tous" ? "Tous" : g === "femme" ? "Femme" : "Homme";
+              return (
+                <button
+                  key={g}
+                  type="button"
+                  aria-pressed={actif}
+                  onClick={() => { userMovedRef.current = true; setGenre(g); }}
+                  className={`inline-flex min-h-touch items-center gap-2 px-4 py-2 hud-label transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2 ${actif ? "bg-primary text-background" : "text-secondary hover:text-primary"}`}
+                >
+                  {actif && <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />}
+                  {label}
+                  <span aria-hidden="true" className={actif ? "opacity-70" : "opacity-50"}>· {count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <p aria-live="polite" className="sr-only">
+          {genre === "tous" ? "Toutes les tenues" : genre === "femme" ? "Vestiaire femme" : "Vestiaire homme"} : {n} modèle{n > 1 ? "s" : ""} affiché{n > 1 ? "s" : ""}
+        </p>
       </div>
 
       {/* Scène : touch-action pan-y = le défilement vertical de la page reste natif */}
@@ -592,6 +710,12 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
                 preloadImageId={intent && intent.tenueId === t.id ? intent.imageId : null}
                 register={register}
                 onNeighborClick={onNeighborClick}
+                showTools={isActiveCard && !moving && !selectedPiece && !infoOpen && !tenue360Piece}
+                onInfo={() => {
+                  if (document.activeElement instanceof HTMLElement) infoButtonRef.current = document.activeElement;
+                  setInfoOpen(true);
+                }}
+                onView360={() => openTenue360(t)}
               >
                 {isActiveCard && !moving && t.pieces?.map((piece) => (
                   <Hotspot
@@ -631,19 +755,9 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
           </div>
 
           <div className="mt-2 flex flex-col items-center gap-3">
-            <button
-              ref={infoButtonRef}
-              type="button"
-              onClick={() => setInfoOpen(true)}
-              disabled={moving}
-              aria-label={`Informations sur la tenue : ${activeTenue.nom}`}
-              className="inline-flex items-center gap-2 px-4 min-h-touch border border-border-control text-primary hud-label hover:bg-surface transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2 disabled:opacity-40"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" /><path d="M12 11 V17" /><circle cx="12" cy="7.5" r="0.6" fill="currentColor" />
-              </svg>
-              Informations
-            </button>
+            <p className="hud-label text-secondary">
+              <span aria-hidden="true" className="text-accent">◆</span> Toucher les pastilles sur le visuel pour examiner chaque détail
+            </p>
             {showMetaTools && activeTenue.pieces && activeTenue.pieces.length > 0 && (
               <PiecesAlternativeList pieces={activeTenue.pieces} onSelectPiece={handleSelectPiece} selectedPieceId={null} className="w-full max-w-md" />
             )}
@@ -651,15 +765,24 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
         </div>
       </div>
 
-      {/* Navigation + progression (n'importe quel nombre de tenues) */}
-      <nav aria-label="Navigation entre les tenues" className="relative mx-auto flex max-w-2xl items-center gap-4 px-6 pb-24 pt-8">
+      {/* Navigation + progression chic (pastilles diamant, sans numérotation 01/02) */}
+      <nav aria-label="Navigation entre les tenues" className="relative mx-auto flex max-w-2xl items-center gap-4 px-6 pb-6 pt-8">
         <button type="button" onClick={() => step(-1)} aria-label="Tenue précédente" aria-disabled={isFirst} tabIndex={isFirst ? -1 : 0} className={navBtn(isFirst)}>
           <ChevronIcon direction="left" />
         </button>
-        <div className="relative h-px flex-1 bg-border-decor" aria-hidden="true">
-          <div className="absolute -top-px left-0 h-[3px] bg-accent" style={{ width: `${100 / n}%` }}>
-            <div ref={thumbRef} className="h-full w-full bg-accent will-change-transform" />
+        <div className="flex flex-1 flex-col items-center gap-2">
+          <div className="flex items-center gap-2" role="presentation">
+            {sorted.map((t, i) => (
+              <span
+                key={t.id}
+                aria-hidden="true"
+                className={`block h-1.5 rotate-45 border transition-all duration-300 ${i === activeIndex ? "w-1.5 border-accent bg-accent" : "w-1.5 border-border-control bg-transparent opacity-60"}`}
+              />
+            ))}
           </div>
+          <p className="hud-label text-secondary" aria-hidden="true">
+            {activeTenue.genre === "homme" ? "Vestiaire homme" : activeTenue.genre === "femme" ? "Vestiaire femme" : "Vestiaire"} — {activeIndex + 1} sur {n}
+          </p>
         </div>
         <button type="button" onClick={() => step(1)} aria-label="Tenue suivante" aria-disabled={isLast} tabIndex={isLast ? -1 : 0} className={navBtn(isLast)}>
           <ChevronIcon direction="right" />
@@ -680,6 +803,16 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
         garment={tenueToGarmentDetails(activeTenue, getColorisChoisi(activeTenue, colorisSel[activeTenue.id]))}
         triggerRef={infoButtonRef}
       />
+
+      {tenue360Piece && (
+        <DetailOverlay
+          piece={tenue360Piece.piece}
+          tenueNom={tenue360Piece.nom}
+          tenueReference={tenue360Piece.ref}
+          whatsappPhone={siteConfig.telephoneWhatsApp}
+          onClosed={() => setTenue360Piece(null)}
+        />
+      )}
 
       {selectedPiece && (
         <DetailOverlay
