@@ -16,6 +16,8 @@ import Reveal from "@/components/Reveal";
 import HorizontalShowcase from "@/components/HorizontalShowcase";
 import AccessoiresSection from "@/components/AccessoiresSection";
 import type { PieceEntry } from "@/components/AccessoiresSection";
+import AccessoiresBoutique from "@/components/AccessoiresBoutique";
+import PairesSection from "@/components/PairesSection";
 import CollectionsSection from "@/components/CollectionsSection";
 import SiteFooter from "@/components/SiteFooter";
 import { siteConfig } from "../../site.config";
@@ -60,13 +62,19 @@ export default function HomePage() {
         <AccessoiresSection pieces={pieces} />
       </Reveal>
 
+      <Reveal as="section" aria-label="Accessoires de la boutique">
+        <AccessoiresBoutique />
+      </Reveal>
+
+      <Reveal as="section" aria-label="Paires de mannequins">
+        <PairesSection />
+      </Reveal>
+
       <Reveal as="section" aria-label="Collections">
         <CollectionsSection tenues={tenuesSorted} />
       </Reveal>
 
-      <Reveal as="div" start="top 95%">
-        <SiteFooter nom={siteConfig.nomCommercial} collections={collections} />
-      </Reveal>
+      <SiteFooter nom={siteConfig.nomCommercial} collections={collections} />
     </main>
   );
 }

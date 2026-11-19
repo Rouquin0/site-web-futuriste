@@ -10,11 +10,13 @@ const config: Config = {
       colors: {
         background: "var(--color-background)",
         surface: "var(--color-surface)",
+        beige: "var(--color-beige)",
+        bordeaux: "var(--color-bordeaux)",
+        encre: "var(--color-encre)",
         primary: "var(--color-primary)",
         secondary: "var(--color-secondary)",
         "border-decor": "var(--color-border-decor)",
         "border-control": "var(--color-border-control)",
-        scrim: "var(--color-scrim)",
         accent: {
           DEFAULT: "var(--color-accent)",
           contrast: "var(--color-accent-contrast)",
