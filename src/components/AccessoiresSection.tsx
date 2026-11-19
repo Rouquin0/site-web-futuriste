@@ -8,11 +8,12 @@
  * apparaissent automatiquement ici. Aucune image n'est inventée : sans photo, un repère SVG s'affiche.
  */
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import SectionHead from "./SectionHead";
 import DetailOverlay from "./DetailOverlay";
 import { CornerBrackets, PieceGlyph } from "./HudGraphics";
+import { useTilt } from "../hooks/useTilt";
 import type { PieceDetail } from "../types/catalogue";
 import { siteConfig } from "../../site.config";
 
@@ -27,16 +28,21 @@ function PieceCell({ entry, index, onOpen }: { entry: PieceEntry; index: number;
   const { piece } = entry;
   const photo = piece.photos[0];
   const label = piece.type === "accessoire" ? "Accessoire" : "Pièce";
+  // Micro-perspective n°1 : inclinaison ≤ 2° au survol, pointeur précis uniquement
+  const hostRef = useRef<HTMLButtonElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
+  useTilt(hostRef, tiltRef);
 
   return (
     <li data-reveal className="bg-background">
       <button
+        ref={hostRef}
         type="button"
         onClick={() => onOpen(entry)}
         aria-label={`Examiner en détail : ${piece.nom} (${label.toLowerCase()}, ${entry.tenueNom})`}
         className="group relative block w-full text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:-outline-offset-4"
       >
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
+        <div ref={tiltRef} className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
           <PieceGlyph className="absolute inset-0 m-auto h-1/2 w-1/2 text-border-control opacity-60" />
           {photo && !failed && (
             <Image

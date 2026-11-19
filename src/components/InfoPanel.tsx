@@ -161,7 +161,7 @@ export default function InfoPanel({
     >
       {/* Arrière-plan neutre sobre (Aplat sans flou liquid glass ni glow) */}
       <div
-        className="fixed inset-0 bg-black/60 transition-opacity"
+        className="fixed inset-0 bg-scrim transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -173,7 +173,7 @@ export default function InfoPanel({
       */}
       <div
         ref={panelRef}
-        className="relative z-10 w-full max-h-[88vh] md:max-h-full md:h-full md:w-[460px] flex flex-col bg-surface text-primary border-t md:border-t-0 md:border-l border-border-decor shadow-2xl overflow-hidden pb-safe"
+        className="relative z-10 w-full max-h-[88vh] md:max-h-full md:h-full md:w-[460px] flex flex-col bg-surface text-primary border-t md:border-t-0 md:border-l border-border-decor overflow-hidden pb-safe"
       >
         {/* En-tête du panneau */}
         <header className="flex items-center justify-between p-6 border-b border-border-decor">
@@ -338,7 +338,7 @@ export default function InfoPanel({
                   </thead>
                   <tbody className="divide-y divide-border-decor">
                     {garmentData.sizeGuide?.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-background/50">
+                      <tr key={idx} className="hover:bg-background">
                         <td className="px-3 py-2.5 font-medium text-primary">{row.size}</td>
                         <td className="px-3 py-2.5 text-secondary">{row.bust || "—"}</td>
                         <td className="px-3 py-2.5 text-secondary">{row.waist || "—"}</td>
@@ -358,7 +358,7 @@ export default function InfoPanel({
         </div>
 
         {/* Pied du panneau */}
-        <footer className="p-6 border-t border-border-decor bg-background/40">
+        <footer className="p-6 border-t border-border-decor bg-background">
           <button
             type="button"
             onClick={onClose}

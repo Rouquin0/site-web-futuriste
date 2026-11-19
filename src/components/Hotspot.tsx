@@ -67,7 +67,7 @@ export default function Hotspot({
     >
       {/* Pastille visuelle sobre — Fond surface/90, bordure des contrôles (contraste >= 3:1) */}
       <span
-        className={`relative flex items-center justify-center w-8 h-8 rounded-full border border-border-control bg-surface/90 text-primary shadow-sm transition-colors duration-150 group-hover:bg-surface group-hover:border-primary ${
+        className={`relative flex items-center justify-center w-8 h-8 rounded-full border border-border-control bg-surface text-primary transition-colors duration-150 group-hover:bg-surface group-hover:border-primary ${
           isActive
             ? "border-accent ring-2 ring-accent text-accent"
             : ""

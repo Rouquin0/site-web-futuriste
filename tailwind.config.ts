@@ -14,6 +14,7 @@ const config: Config = {
         secondary: "var(--color-secondary)",
         "border-decor": "var(--color-border-decor)",
         "border-control": "var(--color-border-control)",
+        scrim: "var(--color-scrim)",
         accent: {
           DEFAULT: "var(--color-accent)",
           contrast: "var(--color-accent-contrast)",

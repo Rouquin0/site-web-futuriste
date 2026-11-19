@@ -27,7 +27,7 @@ const ORNAMENTS: Record<string, string> = {
 
 export default function SectionHead({ title, eyebrow, right, headingId, variant = "defile" }: SectionHeadProps) {
   return (
-    <header data-reveal className="w-full">
+    <header className="w-full">
       <div className="flex items-center gap-3">
         <span aria-hidden="true" className="flex items-center gap-2 text-accent">
           <span className="block h-px w-8 bg-accent" />
@@ -42,12 +42,16 @@ export default function SectionHead({ title, eyebrow, right, headingId, variant 
         <span aria-hidden="true" className="h-px flex-1 bg-border-decor" />
         {right && <div className="hud-label shrink-0 text-secondary">{right}</div>}
       </div>
+      {/* Titre : monte derrière un masque (data-mask). La marge négative compense le débord des jambages. */}
       <h2 id={headingId} className="mt-3 font-serif text-4xl font-light leading-none text-primary md:text-6xl">
-        {title}
+        <span className="block overflow-hidden pb-[0.12em] -mb-[0.12em]">
+          <span data-mask className="block">{title}</span>
+        </span>
       </h2>
-      <svg className="mt-4 block h-2 w-full text-border-control" aria-hidden="true" focusable="false" preserveAspectRatio="none">
-        <line data-draw x1="0" y1="1" x2="100%" y2="1" pathLength={1} stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-      </svg>
+      {/* Filet : se trace en scaleX (data-line). Hauteur réservée = aucun décalage de mise en page. */}
+      <div className="mt-4 h-2 w-full" aria-hidden="true">
+        <div data-line className="h-px w-full bg-border-control" />
+      </div>
     </header>
   );
 }

@@ -14,6 +14,7 @@ export const designTokens = {
       borderControl: "#78716C",
       accent: "#A16207",
       accentContrast: "#FAFAF9",
+      scrim: "rgb(28 25 23 / 0.6)",
     },
     dark: {
       background: "#1C1917",
@@ -24,6 +25,7 @@ export const designTokens = {
       borderControl: "#78716C",
       accent: "#D4A04A",
       accentContrast: "#1C1917",
+      scrim: "rgb(28 25 23 / 0.6)",
     },
   },
   typography: {

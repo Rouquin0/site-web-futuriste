@@ -64,7 +64,9 @@ export default function HomePage() {
         <CollectionsSection tenues={tenuesSorted} />
       </Reveal>
 
-      <SiteFooter nom={siteConfig.nomCommercial} collections={collections} />
+      <Reveal as="div" start="top 95%">
+        <SiteFooter nom={siteConfig.nomCommercial} collections={collections} />
+      </Reveal>
     </main>
   );
 }

@@ -19,6 +19,8 @@
   --color-border-control: #78716C;
   --color-accent: #A16207;
   --color-accent-contrast: #FAFAF9;
+  /* Voile uni derrière les panneaux : encre #1C1917 à 60 %, sans flou (le panneau reste opaque) */
+  --color-scrim: rgb(28 25 23 / 0.6);
 
   /* Marges de sécurité système (Safe Areas) */
   --sat: env(safe-area-inset-top, 0px);
@@ -89,10 +91,11 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   V5 — Mouvement, repères techniques
+   Couche mouvement — « instrument de précision »
    Règles : transform + opacity uniquement, aucun dégradé, aucune lueur.
-   Sans JavaScript (classe « js » absente) ou en réduction des animations :
-   tout est visible immédiatement.
+   Sans JavaScript (classe « js » absente), en réduction des animations ou en
+   économie de données : tout est visible immédiatement (le code ajoute alors
+   la classe .is-revealed). Les états initiaux ci-dessous ne sont posés que si JS est actif.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Étiquettes techniques (monospace, capitales espacées) */
@@ -104,63 +107,60 @@
   text-transform: uppercase;
 }
 
-/* États initiaux des animations d'apparition (posés uniquement si JavaScript est actif) */
+/* États initiaux */
 html.js [data-hero],
 html.js [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 28px, 0);
 }
 
+/* Anneaux techniques : fondu + léger zoom */
+html.js [data-ring] {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+/* Lettres du titre et titres de section : révélation derrière un masque */
 html.js [data-char] {
   transform: translate3d(0, 112%, 0);
 }
 
-html.js [data-draw] {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+html.js [data-mask] {
+  transform: translate3d(0, 110%, 0);
+}
+
+/* Filets : tracés en scaleX depuis la gauche */
+html.js [data-line] {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
 }
 
 /* États finaux (posés par le code quand l'animation est terminée, ou sans animation) */
 html.js [data-hero].is-revealed,
-html.js [data-reveal].is-revealed {
+html.js [data-reveal].is-revealed,
+html.js [data-ring].is-revealed {
   opacity: 1 !important;
   transform: none !important;
 }
 
-html.js [data-char].is-revealed {
+html.js [data-char].is-revealed,
+html.js [data-mask].is-revealed,
+html.js [data-line].is-revealed {
   transform: none !important;
-}
-
-html.js [data-draw].is-drawn {
-  stroke-dashoffset: 0 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html.js [data-hero],
-  html.js [data-reveal] {
+  html.js [data-reveal],
+  html.js [data-ring] {
     opacity: 1 !important;
     transform: none !important;
   }
-  html.js [data-char] {
+  html.js [data-char],
+  html.js [data-mask],
+  html.js [data-line] {
     transform: none !important;
   }
-  html.js [data-draw] {
-    stroke-dashoffset: 0 !important;
-  }
-}
-
-/* Trait d'invitation au défilement */
-@keyframes scroll-cue {
-  0% {
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 400%, 0);
-  }
-}
-
-.scroll-cue {
-  animation: scroll-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
 /* Le défilement vertical de la page reste natif ; défilement doux seulement si autorisé */
@@ -168,4 +168,25 @@ html.js [data-draw].is-drawn {
   html {
     scroll-behavior: smooth;
   }
+}
+
+/* Soulignement au survol / focus : filet 1 px en scaleX, 150 ms (neutralisé en réduction des animations) */
+.link-rule {
+  position: relative;
+}
+.link-rule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 150ms ease-out;
+}
+.link-rule:hover::after,
+.link-rule:focus-visible::after {
+  transform: scaleX(1);
 }

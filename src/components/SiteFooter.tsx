@@ -88,9 +88,9 @@ export default function SiteFooter({ nom, collections = [] }: SiteFooterProps) {
             <div>
               <p className="hud-label text-secondary">Maison</p>
               <ul className="mt-4 space-y-3 font-sans text-sm text-primary">
-                <li><a href="#defile" className="transition-colors hover:text-accent">Le défilé</a></li>
-                <li><a href="#defile" className="transition-colors hover:text-accent">Vestiaire femme</a></li>
-                <li><a href="#defile" className="transition-colors hover:text-accent">Vestiaire homme</a></li>
+                <li><a href="#defile" className="link-rule transition-colors hover:text-accent">Le défilé</a></li>
+                <li><a href="#defile" className="link-rule transition-colors hover:text-accent">Vestiaire femme</a></li>
+                <li><a href="#defile" className="link-rule transition-colors hover:text-accent">Vestiaire homme</a></li>
               </ul>
             </div>
             <div>
@@ -104,10 +104,10 @@ export default function SiteFooter({ nom, collections = [] }: SiteFooterProps) {
             <div>
               <p className="hud-label text-secondary">Aide</p>
               <ul className="mt-4 space-y-3 font-sans text-sm text-primary">
-                <li><a href={siteConfig.sociaux.whatsapp} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">Commander sur WhatsApp</a></li>
-                <li><a href={siteConfig.liensFooter.cgv} className="transition-colors hover:text-accent">Conditions de vente</a></li>
-                <li><a href={siteConfig.liensFooter.mentionsLegales} className="transition-colors hover:text-accent">Mentions légales</a></li>
-                <li><a href={siteConfig.liensFooter.politiqueConfidentialite} className="transition-colors hover:text-accent">Confidentialité</a></li>
+                <li><a href={siteConfig.sociaux.whatsapp} target="_blank" rel="noopener noreferrer" className="link-rule transition-colors hover:text-accent">Commander sur WhatsApp</a></li>
+                <li><a href={siteConfig.liensFooter.cgv} className="link-rule transition-colors hover:text-accent">Conditions de vente</a></li>
+                <li><a href={siteConfig.liensFooter.mentionsLegales} className="link-rule transition-colors hover:text-accent">Mentions légales</a></li>
+                <li><a href={siteConfig.liensFooter.politiqueConfidentialite} className="link-rule transition-colors hover:text-accent">Confidentialité</a></li>
               </ul>
             </div>
           </nav>
@@ -115,7 +115,8 @@ export default function SiteFooter({ nom, collections = [] }: SiteFooterProps) {
       </div>
 
       {/* Barre légale */}
-      <div className="border-t border-border-decor">
+      <div>
+        <div data-line aria-hidden="true" className="h-px w-full bg-border-decor" />
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6">
           <p className="hud-label text-secondary">
             © {new Date().getFullYear()} {nom} <span aria-hidden="true" className="mx-1 text-border-control">·</span> {siteConfig.ville} — {siteConfig.pays}

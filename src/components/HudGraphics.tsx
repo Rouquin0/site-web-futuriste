@@ -14,12 +14,11 @@ interface MannequinSvgProps {
   className?: string;
   /** Ajoute les repères de mesure (buste, taille, hanches) */
   annotated?: boolean;
-  /** Attribut data-draw sur les tracés : animés par GSAP (stroke-dashoffset) */
+  /** @deprecated Sans effet : le tracé par stroke-dashoffset a été retiré (seuls transform et opacity sont animés). */
   drawable?: boolean;
 }
 
-export function MannequinSvg({ className = "", annotated = false, drawable = false }: MannequinSvgProps) {
-  const draw = drawable ? { "data-draw": "" } : {};
+export function MannequinSvg({ className = "", annotated = false }: MannequinSvgProps) {
   const common = {
     fill: "none",
     stroke: "currentColor",
@@ -39,9 +38,9 @@ export function MannequinSvg({ className = "", annotated = false, drawable = fal
       focusable="false"
     >
       {/* Tête lisse : aucun trait */}
-      <ellipse cx="100" cy="36" rx="16" ry="21" {...common} {...draw} />
+      <ellipse cx="100" cy="36" rx="16" ry="21" {...common} />
       {/* Cou */}
-      <path d="M93 56 L94 72 M107 56 L106 72" {...common} {...draw} />
+      <path d="M93 56 L94 72 M107 56 L106 72" {...common} />
       {/* Buste */}
       <path
         d="M94 72 C76 74 58 80 54 96 C52 106 56 118 58 132 C60 150 64 168 66 182
@@ -50,15 +49,15 @@ export function MannequinSvg({ className = "", annotated = false, drawable = fal
            C136 168 140 150 142 132 C144 118 148 106 146 96
            C142 80 124 74 106 72"
         {...common}
-        {...draw}
+       
       />
       {/* Lignes de repère : buste, taille, hanches */}
       <path d="M58 124 Q100 134 142 124" {...common} strokeDasharray="2 4" opacity={0.6} />
       <path d="M66 182 Q100 192 134 182" {...common} strokeDasharray="2 4" opacity={0.6} />
       <path d="M58 232 Q100 244 142 232" {...common} strokeDasharray="2 4" opacity={0.6} />
       {/* Pied et socle */}
-      <path d="M100 258 L100 412" {...common} {...draw} />
-      <ellipse cx="100" cy="420" rx="46" ry="8" {...common} {...draw} />
+      <path d="M100 258 L100 412" {...common} />
+      <ellipse cx="100" cy="420" rx="46" ry="8" {...common} />
       <ellipse cx="100" cy="420" rx="28" ry="4.5" {...common} opacity={0.6} />
 
       {annotated && (

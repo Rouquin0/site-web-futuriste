@@ -5,11 +5,15 @@
  *
  * - Déclenchée UNE SEULE FOIS quand la section entre dans l'écran (GSAP ScrollTrigger, chargé dynamiquement)
  * - transform + opacity uniquement, sans pin ni scrub
- * - Éléments animés : [data-reveal] (translation + opacité), [data-draw] (tracé SVG)
- * - Sans JS, ou en réduction des animations : tout est visible tout de suite (voir globals.css)
+ * - Éléments animés :
+ *     [data-reveal] translation + opacité (stagger ≤ 60 ms)
+ *     [data-mask]   titre qui monte derrière un masque
+ *     [data-line]   filet qui se trace en scaleX
+ * - Sans JS, en réduction des animations ou en économie de données : tout est visible tout de suite
  */
 
 import React, { useEffect, useRef } from "react";
+import { DUR, EASE, STAGGER, loadGsap, motionAllowed, setWillChange } from "../lib/motion";
 
 interface RevealProps {
   children: React.ReactNode;
@@ -37,14 +41,13 @@ export default function Reveal({
     if (!root) return;
 
     const items = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
-    const drawings = Array.from(root.querySelectorAll<SVGElement>("[data-draw]"));
+    const masks = Array.from(root.querySelectorAll<HTMLElement>("[data-mask]"));
+    const lines = Array.from(root.querySelectorAll<HTMLElement>("[data-line]"));
+    const all = [...items, ...masks, ...lines];
 
-    const showAll = () => {
-      items.forEach((el) => el.classList.add("is-revealed"));
-      drawings.forEach((el) => el.classList.add("is-drawn"));
-    };
+    const showAll = () => all.forEach((el) => el.classList.add("is-revealed"));
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!motionAllowed()) {
       showAll();
       return;
     }
@@ -54,46 +57,62 @@ export default function Reveal({
 
     (async () => {
       try {
-        const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ]);
+        const [gsap, { ScrollTrigger }] = await Promise.all([loadGsap(), import("gsap/ScrollTrigger")]);
         if (cancelled) return;
         gsap.registerPlugin(ScrollTrigger);
+
+        let tl: { kill: () => void } | undefined;
+
+        const finish = (els: HTMLElement[]) => {
+          els.forEach((el) => {
+            el.classList.add("is-revealed");
+            gsap.set(el, { clearProps: "opacity,transform" });
+          });
+          setWillChange(els, false);
+        };
 
         const trigger = ScrollTrigger.create({
           trigger: root,
           start,
           once: true,
           onEnter: () => {
-            const tl = gsap.timeline();
-            if (drawings.length) {
-              tl.to(drawings, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut", stagger: 0.06 }, 0);
-            }
-            if (items.length) {
-              tl.to(
-                items,
-                {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.7,
-                  ease: "power3.out",
-                  stagger: 0.08,
-                  onComplete: () => {
-                    // L'état final passe par la classe CSS : aucune transformation résiduelle
-                    items.forEach((el) => {
-                      el.classList.add("is-revealed");
-                      gsap.set(el, { clearProps: "opacity,transform" });
-                    });
-                  },
-                },
+            const timeline = gsap.timeline();
+            if (masks.length) {
+              setWillChange(masks, true, "transform");
+              timeline.fromTo(
+                masks,
+                { y: "110%" },
+                { y: 0, duration: DUR.reveal, ease: EASE.expo, stagger: STAGGER.group, onComplete: () => finish(masks) },
                 0
               );
             }
+            if (lines.length) {
+              setWillChange(lines, true, "transform");
+              timeline.fromTo(
+                lines,
+                { scaleX: 0, transformOrigin: "0% 50%" },
+                { scaleX: 1, duration: DUR.line, ease: EASE.expo, stagger: STAGGER.group, onComplete: () => finish(lines) },
+                0.08
+              );
+            }
+            if (items.length) {
+              setWillChange(items, true);
+              timeline.fromTo(
+                items,
+                { opacity: 0, y: 28 },
+                { opacity: 1, y: 0, duration: DUR.reveal, ease: EASE.expo, stagger: STAGGER.group, onComplete: () => finish(items) },
+                0
+              );
+            }
+            tl = timeline;
           },
         });
 
-        cleanup = () => trigger.kill();
+        cleanup = () => {
+          trigger.kill();
+          tl?.kill();
+          setWillChange(all, false);
+        };
       } catch {
         // Repli : si GSAP ne se charge pas, le contenu reste lisible
         showAll();

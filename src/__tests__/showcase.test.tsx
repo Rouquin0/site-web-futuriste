@@ -8,7 +8,7 @@ import type { Tenue } from "../types/catalogue";
 
 beforeEach(() => { window.history.replaceState(null, "", "/"); });
 
-const live = () => document.querySelector("[aria-live='polite']")!.textContent ?? "";
+const live = () => document.querySelector("[data-live='position']")!.textContent ?? "";
 const press = (key: string) => act(() => { fireEvent.keyDown(window, { key }); });
 
 describe("défilé horizontal", () => {

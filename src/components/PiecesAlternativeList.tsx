@@ -44,7 +44,7 @@ export default function PiecesAlternativeList({
         >
           {label}
         </span>
-        <span className="text-xs text-secondary/70 font-mono">
+        <span className="text-xs text-secondary font-mono">
           ({pieces.length})
         </span>
       </div>
@@ -69,14 +69,14 @@ export default function PiecesAlternativeList({
                 aria-pressed={isSelected}
                 className={`group flex items-center gap-2.5 px-3.5 py-2.5 min-h-touch min-w-touch rounded border text-xs font-sans uppercase tracking-wider transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2 select-none ${
                   isSelected
-                    ? "border-accent bg-accent text-accent-contrast font-semibold shadow-sm"
+                    ? "border-accent bg-accent text-accent-contrast font-semibold"
                     : "border-border-control bg-surface text-primary hover:bg-background hover:border-primary active:scale-[0.98]"
                 }`}
               >
                 {/* Numérotation éditoriale */}
                 <span
                   className={`font-mono text-[10px] ${
-                    isSelected ? "text-accent-contrast/80" : "text-secondary"
+                    isSelected ? "text-accent-contrast" : "text-secondary"
                   }`}
                   aria-hidden="true"
                 >
@@ -92,7 +92,7 @@ export default function PiecesAlternativeList({
                 <span
                   className={`text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wider ${
                     isSelected
-                      ? "bg-black/10 text-accent-contrast"
+                      ? "border border-accent-contrast text-accent-contrast"
                       : "bg-background text-secondary border border-border-decor"
                   }`}
                   aria-hidden="true"

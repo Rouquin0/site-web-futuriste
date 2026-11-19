@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { DUR, EASE, loadGsap, motionAllowed, setWillChange } from "../lib/motion";
 
 export interface ThemeToggleProps {
   className?: string;
@@ -51,6 +52,8 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
   // Le thème par défaut imposé est toujours clair (false)
   const [isDark, setIsDark] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const iconRef = useRef<SVGSVGElement>(null);
+  const userToggled = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -70,7 +73,27 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
     }
   }, []);
 
+  // Rotation 90° + fondu de l'icône (0,25 s) : seulement après un clic, jamais au chargement
+  useEffect(() => {
+    if (!userToggled.current) return;
+    userToggled.current = false;
+    const el = iconRef.current;
+    if (!el || !motionAllowed()) return;
+    let dead = false;
+    let tween: { kill: () => void } | undefined;
+    loadGsap().then((gsap) => {
+      if (dead) return;
+      setWillChange(el, true);
+      tween = gsap.fromTo(el, { rotation: -90, opacity: 0 }, {
+        rotation: 0, opacity: 1, duration: DUR.icon, ease: EASE.inOut,
+        onComplete: () => { gsap.set(el, { clearProps: "transform,opacity" }); setWillChange(el, false); },
+      });
+    });
+    return () => { dead = true; tween?.kill(); };
+  }, [isDark]);
+
   const toggleTheme = () => {
+    userToggled.current = true;
     const nextThemeIsDark = !isDark;
     setIsDark(nextThemeIsDark);
 
@@ -104,6 +127,7 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
       ) : isDark ? (
         /* Icône Soleil - Lignes épurées, sobre et équilibrée */
         <svg
+          ref={iconRef}
           className="w-5 h-5 stroke-primary"
           fill="none"
           viewBox="0 0 24 24"
@@ -125,6 +149,7 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
       ) : (
         /* Icône Lune - Silhouette sobre et fine */
         <svg
+          ref={iconRef}
           className="w-5 h-5 stroke-primary"
           fill="none"
           viewBox="0 0 24 24"

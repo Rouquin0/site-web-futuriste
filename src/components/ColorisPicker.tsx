@@ -10,6 +10,8 @@
  */
 
 import React, { useRef } from "react";
+import { useMotion } from "../hooks/useMotion";
+import { DUR, EASE, loadGsap, setWillChange } from "../lib/motion";
 import type { Coloris, Tenue } from "../types/catalogue";
 import { colorisEpuise } from "../lib/coloris";
 import { resoudreImage } from "../lib/images";
@@ -25,21 +27,46 @@ interface ColorisPickerProps {
 export default function ColorisPicker({ tenue, selectedId, onSelect, onIntent }: ColorisPickerProps) {
   const liste = tenue.coloris ?? [];
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
+  const swatches = useRef<Array<HTMLSpanElement | null>>([]);
+  const { allowed, fine } = useMotion();
   if (liste.length < 2) return null;
 
   const selected = liste.find((c) => c.id === selectedId) ?? liste[0];
 
+  /**
+   * Micro-interaction 3D n°3 : retournement de la pastille choisie (rotationY 0 → 360°, 0,3 s).
+   * Pointeur précis seulement ; en tactile, un fondu bref (0,15 s) ; en réduction des animations : rien.
+   */
+  const flip = (i: number) => {
+    const el = swatches.current[i];
+    if (!el || !allowed) return;
+    loadGsap().then((gsap) => {
+      setWillChange(el, true);
+      const done = () => { gsap.set(el, { clearProps: "transform,opacity" }); setWillChange(el, false); };
+      if (fine) {
+        gsap.fromTo(el, { rotationY: 0, transformPerspective: 400 }, { rotationY: 360, duration: DUR.flip, ease: EASE.inOut, onComplete: done });
+      } else {
+        gsap.fromTo(el, { opacity: 0.4 }, { opacity: 1, duration: DUR.fade, ease: EASE.out, onComplete: done });
+      }
+    });
+  };
+
+  const choose = (index: number) => {
+    onSelect(liste[index].id);
+    flip(index);
+  };
+
   const move = (from: number, delta: number) => {
     const next = (from + delta + liste.length) % liste.length;
-    onSelect(liste[next].id);
+    choose(next);
     refs.current[next]?.focus();
   };
 
   const onKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); move(index, 1); }
     else if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); move(index, -1); }
-    else if (e.key === "Home") { e.preventDefault(); onSelect(liste[0].id); refs.current[0]?.focus(); }
-    else if (e.key === "End") { e.preventDefault(); onSelect(liste[liste.length - 1].id); refs.current[liste.length - 1]?.focus(); }
+    else if (e.key === "Home") { e.preventDefault(); choose(0); refs.current[0]?.focus(); }
+    else if (e.key === "End") { e.preventDefault(); choose(liste.length - 1); refs.current[liste.length - 1]?.focus(); }
   };
 
   return (
@@ -60,13 +87,14 @@ export default function ColorisPicker({ tenue, selectedId, onSelect, onIntent }:
               aria-checked={checked}
               aria-label={`Coloris : ${c.nom}${epuise ? ", épuisé" : ", disponible"}${checked ? ", sélectionné" : ""}`}
               tabIndex={checked ? 0 : -1}
-              onClick={() => onSelect(c.id)}
+              onClick={() => choose(i)}
               onKeyDown={(e) => onKeyDown(e, i)}
               onPointerEnter={() => onIntent?.(c)}
               onFocus={() => onIntent?.(c)}
               className="relative flex items-center justify-center w-11 h-11 min-w-touch min-h-touch focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
             >
               <span
+                ref={(el) => { swatches.current[i] = el; }}
                 className={`relative block w-7 h-7 rounded-full overflow-hidden border transition-transform duration-150 ${
                   checked ? "border-accent ring-2 ring-accent ring-offset-2 ring-offset-background scale-105" : "border-border-control"
                 }`}

@@ -31,7 +31,9 @@ import { siteConfig } from "../../site.config";
 import { formatPriceXAF } from "../lib/formatters";
 import { resoudreImage } from "../lib/images";
 import { getColorisChoisi, getColorisDefaut, getImageIdPourColoris } from "../lib/coloris";
-import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useMotion } from "../hooks/useMotion";
+import Odometer from "./Odometer";
+import { DUR, EASE, setWillChange } from "../lib/motion";
 
 // ─── Géométrie du défilé ─────────────────────────────────────────────────────
 
@@ -112,7 +114,7 @@ const Card = React.memo(function Card({
       aria-label={`Tenue ${index + 1} sur ${total}`}
       aria-hidden={!isActive}
       onClick={() => { if (!isActive) onNeighborClick(index); }}
-      className="absolute left-1/2 top-1/2 will-change-transform"
+      className="absolute left-1/2 top-1/2"
       style={{
         width: size.w,
         height: size.h,
@@ -122,7 +124,7 @@ const Card = React.memo(function Card({
       }}
     >
       {/* Repères de visée (active uniquement) */}
-      <div data-info className="pointer-events-none absolute -inset-2 text-accent" style={{ opacity: 0 }}>
+      <div data-info data-reticle className="pointer-events-none absolute -inset-2 text-accent" style={{ opacity: 0 }}>
         <CornerBrackets size={14} />
       </div>
 
@@ -185,7 +187,7 @@ const Card = React.memo(function Card({
               type="button"
               onClick={(e) => { e.stopPropagation(); onView360(); }}
               aria-label={`Voir la tenue ${tenue.nom} en 360°`}
-              className="inline-flex min-h-touch min-w-touch items-center gap-1.5 rounded-full border border-accent bg-surface/95 px-3 py-2 hud-label text-accent shadow-md backdrop-blur transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
+              className="inline-flex min-h-touch min-w-touch items-center gap-1.5 rounded-full border border-accent bg-surface px-3 py-2 hud-label text-accent transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
                 <path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2" />
@@ -198,7 +200,7 @@ const Card = React.memo(function Card({
               onClick={(e) => { e.stopPropagation(); onInfo(); }}
               aria-label={`Informations sur la tenue : ${tenue.nom}`}
               title="Informations"
-              className="flex h-11 min-h-touch w-11 min-w-touch items-center justify-center rounded-full border border-border-control bg-primary text-background shadow-md transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
+              className="flex h-11 min-h-touch w-11 min-w-touch items-center justify-center rounded-full border border-border-control bg-primary text-background transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-border-control focus-visible:outline-offset-2"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" /><path d="M12 11v5" /><circle cx="12" cy="7.6" r="0.7" fill="currentColor" stroke="none" />
@@ -221,7 +223,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
     [baseSorted, genre]
   );
   const n = sorted.length;
-  const reduced = useReducedMotion();
+  const { reduced } = useMotion();
 
   const [mountCenter, setMountCenter] = useState(0); // pilote le montage des cartes
   const [metaIndex, setMetaIndex] = useState(0); // tenue affichée dans le bloc d'informations
@@ -238,6 +240,9 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLSpanElement>(null); // filet d'accent du filtre Vestiaire
+  const filterBtns = useRef<Record<string, HTMLButtonElement | null>>({});
+  const barPlaced = useRef(false);
   const infoButtonRef = useRef<HTMLElement | null>(null);
   const cardEls = useRef(new Map<number, HTMLElement>());
   const parts = useRef(new WeakMap<HTMLElement, { sharp: HTMLElement[]; blur: HTMLElement[]; info: HTMLElement[] }>());
@@ -301,7 +306,11 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
       el.style.zIndex = String(10 - Math.round(Math.abs(d)));
       cached.sharp.forEach((s) => { s.style.opacity = String(1 - ps.mix); });
       cached.blur.forEach((b) => { b.style.opacity = String(ps.mix); });
-      cached.info.forEach((f) => { f.style.opacity = String(ps.info); });
+      cached.info.forEach((f) => {
+        f.style.opacity = String(ps.info);
+        // Réticule de visée : léger zoom 1,04 → 1 à mesure que la carte devient active (transform seulement)
+        if (f.hasAttribute("data-reticle")) f.style.transform = ps.info >= 0.999 ? "" : `scale(${(1 + 0.04 * (1 - ps.info)).toFixed(4)})`;
+      });
     });
     if (metaRef.current) {
       const frac = Math.abs(p - Math.round(p));
@@ -356,6 +365,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
   const stepRef = useRef<(dir: 1 | -1) => void>(() => {});
 
   const settle = useCallback((target: number) => {
+    setWillChange(Array.from(cardEls.current.values()), false);
     movingRef.current = false;
     activeRef.current = target;
     metaRefIdx.current = target;
@@ -384,6 +394,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
     movingRef.current = true;
     setMoving(true);
     setInfoOpen(false);
+    setWillChange(Array.from(cardEls.current.values()), true);
     const proxy = { v: posRef.current };
     tweenRef.current = g.to(proxy, {
       v: target,
@@ -459,6 +470,39 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
     setTenue360Piece(null);
     apply();
   }, [genre, apply]);
+
+  // ── Filet d'accent sous le segment actif du filtre (translateX + scaleX, jamais width/left) ──
+  const placeBar = useCallback((animate: boolean) => {
+    const bar = barRef.current;
+    const btn = filterBtns.current[genre];
+    if (!bar || !btn) return;
+    const x = btn.offsetLeft;
+    const w = btn.offsetWidth;
+    const g = gsapRef.current;
+    if (!g) {
+      bar.style.transformOrigin = "0% 50%";
+      bar.style.transform = `translate3d(${x}px, 0, 0) scaleX(${w})`;
+      return;
+    }
+    if (animate && !reduced) {
+      setWillChange(bar, true, "transform");
+      g.to(bar, { x, scaleX: w, transformOrigin: "0% 50%", duration: DUR.underline, ease: EASE.out, overwrite: true, onComplete: () => setWillChange(bar, false) });
+    } else {
+      g.killTweensOf(bar);
+      g.set(bar, { x, scaleX: w, transformOrigin: "0% 50%" });
+    }
+  }, [genre, reduced]);
+
+  useLayoutEffect(() => {
+    placeBar(barPlaced.current);
+    barPlaced.current = true;
+  }, [placeBar, n]);
+
+  useEffect(() => {
+    const onResize = () => placeBar(false);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [placeBar]);
 
   // ── Visibilité de la section (clavier global actif seulement quand elle est à l'écran) ──
   useEffect(() => {
@@ -636,7 +680,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
           right={
             <span className="inline-flex items-center gap-2" aria-hidden="true">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-              {clamp(metaIndex, 0, n - 1) + 1} / {n} créations
+              <Odometer value={clamp(metaIndex, 0, n - 1) + 1} digits={String(n).length} /> / {n} créations
             </span>
           }
         />
@@ -644,7 +688,8 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
         {/* Filtre Homme / Femme — segmenté premium */}
         <div data-reveal className="mt-6 flex flex-wrap items-center gap-3">
           <p className="hud-label text-secondary">Vestiaire :</p>
-          <div role="group" aria-label="Filtrer les tenues par vestiaire" className="inline-flex items-center gap-1 border border-border-control bg-surface p-1">
+          <div role="group" aria-label="Filtrer les tenues par vestiaire" className="relative inline-flex items-center gap-1 border border-border-control bg-surface p-1">
+            <span ref={barRef} aria-hidden="true" className="pointer-events-none absolute bottom-1 left-0 block h-0.5 w-px bg-accent" />
             {(["tous", "femme", "homme"] as const).map((g) => {
               const actif = genre === g;
               const count = g === "tous" ? baseSorted.length : baseSorted.filter((t) => t.genre === g || t.genre === "unisexe").length;
@@ -652,6 +697,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
               return (
                 <button
                   key={g}
+                  ref={(el) => { filterBtns.current[g] = el; }}
                   type="button"
                   aria-pressed={actif}
                   onClick={() => { userMovedRef.current = true; setGenre(g); }}
@@ -793,7 +839,7 @@ export default function HorizontalShowcase({ tenues }: { tenues: Tenue[] }) {
         <p className="sr-only">Fin de la collection.</p>
       )}
 
-      <div aria-live="polite" aria-atomic="true" className="sr-only">
+      <div aria-live="polite" aria-atomic="true" data-live="position" className="sr-only">
         {`Tenue ${activeIndex + 1} sur ${n} : ${activeTenue.nom}${metaColoris && (activeTenue.coloris?.length ?? 0) > 1 ? `, coloris ${metaColoris.nom}` : ""}`}
       </div>
 

@@ -14,6 +14,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import type { PieceDetail } from "@/types/catalogue";
 import { formatPriceXAF } from "@/lib/formatters";
+import { CornerBrackets } from "./HudGraphics";
+import { motionAllowed } from "@/lib/motion";
 
 export interface DetailViewerProps {
   piece: PieceDetail;
@@ -38,7 +40,8 @@ export default function DetailViewer({ piece, tenueNom, tenueReference, whatsapp
   // Studio 360° : angle simulé 0-360°
   const [angle, setAngle] = useState(0);
   const dragStartAngleRef = useRef(0);
-  const [autoSpin, setAutoSpin] = useState(true);
+  // Pas de rotation automatique en réduction des animations ni en économie de données
+  const [autoSpin, setAutoSpin] = useState(() => motionAllowed());
 
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -115,9 +118,9 @@ export default function DetailViewer({ piece, tenueNom, tenueReference, whatsapp
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="detail-viewer-title" ref={modalRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim p-4 sm:p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-border-control bg-surface shadow-2xl">
+      <div data-detail-panel className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-border-control bg-surface">
         <div className="flex items-center justify-between border-b border-border-decor p-4">
           <div>
             <span className="font-mono text-[10px] uppercase tracking-widest text-secondary">{piece.type} · Réf {tenueReference}</span>
@@ -139,10 +142,10 @@ export default function DetailViewer({ piece, tenueNom, tenueReference, whatsapp
                 <Image src={getRotationImageUrl(currentFrame)} alt={`${piece.nom} — angle ${currentFrame + 1} sur ${totalFrames}`}
                   fill priority className="object-contain" sizes="(max-width: 768px) 100vw, 600px"
                   onError={() => setFramesOk(false)} />
-                <div className="absolute bottom-3 right-3 rounded border border-border-control bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-secondary">
+                <div className="absolute bottom-3 right-3 rounded border border-border-control bg-surface px-2.5 py-1 font-mono text-[11px] tabular-nums text-secondary">
                   {currentFrame + 1} / {totalFrames} (360°)
                 </div>
-                <p className="absolute bottom-3 left-3 rounded bg-surface/90 px-2.5 py-1 font-sans text-[11px] text-secondary">Glissez pour pivoter · double-clic = zoom</p>
+                <p className="absolute bottom-3 left-3 rounded bg-surface px-2.5 py-1 font-sans text-[11px] text-secondary">Glissez pour pivoter · double-clic = zoom</p>
               </div>
             ) : (
               <div className="relative flex h-full w-full items-center justify-center" style={{ perspective: "900px" }}>
@@ -158,15 +161,15 @@ export default function DetailViewer({ piece, tenueNom, tenueReference, whatsapp
                     <div className="text-xs uppercase tracking-wider text-secondary">Photos en cours de préparation</div>
                   )}
                 </div>
-                <div className="absolute bottom-3 right-3 rounded border border-accent bg-surface/95 px-2.5 py-1 font-mono text-[11px] text-accent">
+                <div className="absolute bottom-3 right-3 rounded border border-accent bg-surface px-2.5 py-1 font-mono text-[11px] tabular-nums text-accent">
                   {String(Math.round(angle)).padStart(3, "0")}° — Studio 360°
                 </div>
-                <p className="absolute bottom-3 left-3 max-w-[60%] rounded bg-surface/90 px-2.5 py-1 font-sans text-[11px] text-secondary">
+                <p className="absolute bottom-3 left-3 max-w-[60%] rounded bg-surface px-2.5 py-1 font-sans text-[11px] text-secondary">
                   Glissez pour pivoter{declaredRotation ? " · photos 360° en cours d'ajout" : ""} · double-clic = zoom
                 </p>
                 {/* jauge d'angle */}
                 <div className="absolute left-1/2 top-3 h-1 w-40 -translate-x-1/2 overflow-hidden rounded-full bg-border-decor" aria-hidden="true">
-                  <div className="h-full bg-accent" style={{ width: `${(angle / 360) * 100}%` }} />
+                  <div className="h-full w-full origin-left bg-accent" style={{ transform: `scaleX(${angle / 360})` }} />
                 </div>
               </div>
             )
@@ -181,9 +184,13 @@ export default function DetailViewer({ piece, tenueNom, tenueReference, whatsapp
               )}
             </div>
           )}
+          {/* Repères de visée : traits fixes de 1 px, aucun mouvement */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-1.5 text-accent">
+            <CornerBrackets size={14} />
+          </div>
           <div className="absolute right-3 top-3 z-10 flex flex-col gap-2">
             <button type="button" onClick={() => setIsZoomed((p) => !p)} aria-label={isZoomed ? "Réduire le zoom" : "Agrandir le zoom"}
-              className="flex h-10 min-h-touch w-10 min-w-touch items-center justify-center rounded-full border border-border-control bg-surface/90 text-primary hover:bg-surface">
+              className="flex h-10 min-h-touch w-10 min-w-touch items-center justify-center rounded-full border border-border-control bg-surface text-primary hover:bg-background">
               <span className="font-mono text-sm">{isZoomed ? "−" : "+"}</span>
             </button>
           </div>
