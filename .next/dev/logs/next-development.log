@@ -1,7 +1,9 @@
-{"timestamp":"00:00:06.949","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:10.741","source":"Server","level":"LOG","message":"○ Compiling / ..."}
-{"timestamp":"00:00:19.606","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:00:25.742","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:01:09.674","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:04:21.775","source":"Browser","level":"WARN","message":"Image with src \"/images/pieces/bazin-pantalon-macro.webp\" has \"fill\" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height."}
-{"timestamp":"00:04:21.790","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33mImage with src \\\"/images/pieces/bazin-pantalon-macro.webp\\\" has \\\"fill\\\" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.\\u001b[39m\""}
+{"timestamp":"00:00:07.711","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:11.172","source":"Server","level":"LOG","message":"○ Compiling / ..."}
+{"timestamp":"00:00:16.438","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:18.808","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:35.994","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:51.784","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:57.497","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:01:02.170","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:01:05.877","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
